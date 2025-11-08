@@ -146,3 +146,67 @@
   </body>
   
 DISEÑADO POR  DJ FIDODIDO 
+<div id="radiosplay-player-68feba8fefd0a"></div>
+<script>
+(function() {
+    var playerContainer = document.getElementById('radiosplay-player-68feba8fefd0a');
+    if (!playerContainer) { console.error('Player container not found.'); return; }
+
+    var isFixed = true;
+    
+    if (isFixed) {
+        playerContainer.style.position = 'fixed';
+        playerContainer.style.bottom = '0';
+        playerContainer.style.left = '0';
+        playerContainer.style.width = '100%';
+        playerContainer.style.height = '75px';
+        playerContainer.style.zIndex = '999';
+    } else {
+        playerContainer.style.position = 'relative';
+        playerContainer.style.width = '100%';
+        playerContainer.style.height = '75px';
+    }
+
+    var hosts = ['https://radiosplay.com.ar/player-gratis', 'https://radiosplay.top/player-gratis'];
+    var playerParams = 'panel=zenoradio&stream=https%3A%2F%2Fstream.zeno.fm%2Fycyx8mbg65quv&nombre=Radio+Mix+Potos%C3%AD+Show&logo=https%3A%2F%2Fradiomixpotosishow.com%2Flogos%2FLOGO%2520MIX%2520%2520MEJORADO%2520online%2520transparente.png&bgcolor=%23e50b0b&textcolor=%2300fffb&social_fb=https%3A%2F%2Fwww.facebook.com%2Fradiomixpotosibolivia&social_ig=&social_tk=&social_x=&social_yt=https%3A%2F%2Fyoutube.com%2FRadioMixPotosiBolivia&social_wa=%2B54+9+1122566527&social_twitch=&social_discord=&social_soundcloud=&custom_link_url=https%3A%2F%2Fmpago.la%2F2Cc7uGT&custom_link_icon=mercado&social_color=%23007bff&social_align=center&app_android=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.showmix.magiadigitalpy&app_iphone=&app_windows=&app_align=right&app_android_restrict=1&app_iphone_restrict=1&app_windows_restrict=1&show_title=1&show_cover=1&show_volume=1&autoplay=1&fijar=1&overlay=0&branding_text=RadioMixPotosiShow&azuracast_stub=&bgimg=https%3A%2F%2Fibb.co%2FQ7R6QgM7&bgsize=cover&bgpos=center+center';
+    var loaded = false;
+
+    function createIframe(src) {
+        var iframe = document.createElement('iframe');
+        iframe.src = src;
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allow', 'autoplay');
+        iframe.setAttribute('scrolling', 'no');
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        playerContainer.innerHTML = '';
+        playerContainer.appendChild(iframe);
+        loaded = true;
+    }
+
+    function checkHost(index) {
+        if (index >= hosts.length || loaded) {
+            if (!loaded) playerContainer.innerHTML = 'Error: No se pudo cargar el reproductor desde los servidores disponibles.';
+            return;
+        }
+        var host = hosts[index];
+        var testUrl = host + '/play.png?t=' + new Date().getTime();
+        var controller = new AbortController();
+        var timeoutId = setTimeout(function() { controller.abort(); }, 4000);
+
+        fetch(testUrl, { signal: controller.signal, mode: 'no-cors', cache: 'no-store' })
+        .then(function() {
+            clearTimeout(timeoutId);
+            if(loaded) return;
+            var playerUrl = host + '/reproductor.php?' + playerParams;
+            createIframe(playerUrl);
+        })
+        .catch(function() {
+            clearTimeout(timeoutId);
+            console.warn('Host ' + host + ' fallido. Probando el siguiente...');
+            checkHost(index + 1);
+        });
+    }
+    checkHost(0);
+})();
+</script>
